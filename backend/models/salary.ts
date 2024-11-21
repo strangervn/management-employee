@@ -1,10 +1,22 @@
-import mongoose from 'mongoose';
+// backend/src/models/Salary.ts
 
-const salarySchema = new mongoose.Schema({
-  employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
-  amount: { type: Number, required: true },
-  date: { type: Date, default: Date.now },
-});
+import { Schema, model, Document } from 'mongoose';
+import { ISalary } from '../interfaces/Salary';
 
-const Salary = mongoose.model('Salary', salarySchema);
+const salarySchema = new Schema<ISalary>(
+  {
+    employeeId: { type: Schema.Types.ObjectId, ref: 'Employee', required: true },
+    month: { type: String, required: true },
+    year: { type: Number, required: true },
+    basicSalary: { type: Number, required: true },
+    bonus: { type: Number, default: 0 },
+    deductions: { type: Number, default: 0 },
+    totalSalary: { type: Number, required: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+  },
+  { timestamps: true }
+);
+
+const Salary = model<ISalary>('Salary', salarySchema);
 export default Salary;
