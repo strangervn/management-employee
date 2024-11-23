@@ -1,7 +1,7 @@
 // backend/src/models/Salary.ts
 
 import { Schema, model, Document } from 'mongoose';
-import { ISalary } from '../interfaces/Salary';
+import { ISalary } from '../interfaces/salary';
 
 const salarySchema = new Schema<ISalary>(
   {
@@ -11,9 +11,7 @@ const salarySchema = new Schema<ISalary>(
     basicSalary: { type: Number, required: true },
     bonus: { type: Number, default: 0 },
     deductions: { type: Number, default: 0 },
-    totalSalary: { type: Number, required: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    totalSalary: { type: Number, required: true }
   },
   { timestamps: true }
 );

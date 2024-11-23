@@ -10,9 +10,7 @@ const taskSchema = new Schema<ITask>(
     assignedTo: { type: Schema.Types.ObjectId, ref: 'Employee' },
     status: { type: String, enum: ['Not Started', 'In Progress', 'Completed'], required: true },
     startDate: { type: Date, default: Date.now },
-    dueDate: { type: Date },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    dueDate: { type: Date }
   },
   { timestamps: true }
 );

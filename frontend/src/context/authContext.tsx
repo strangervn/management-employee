@@ -1,14 +1,18 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { login, logout } from '../api/authService';
 
-interface AuthContextType {
+// Định nghĩa kiểu AuthContext
+export interface AuthContextType {
+  role: string;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Tạo context
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Custom hook để sử dụng context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -17,32 +21,36 @@ export const useAuth = () => {
   return context;
 };
 
+// AuthProvider component để cung cấp context cho các component con
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [role, setRole] = useState<string>('employee'); // Khởi tạo role mặc định là 'employee'
 
   const loginHandler = async (username: string, password: string) => {
     try {
-      await login(username, password);
+      await login(username, password); // Gọi API đăng nhập
       setIsAuthenticated(true);
+      setRole('admin'); // Sau khi đăng nhập thành công, set role là 'admin'
     } catch (err) {
       console.error('Login failed:', err);
     }
   };
 
   const logoutHandler = async () => {
-    await logout();
+    await logout(); // Gọi API đăng xuất
     setIsAuthenticated(false);
+    setRole('employee'); // Đặt lại role về mặc định sau khi đăng xuất
   };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      setIsAuthenticated(true);
+      setIsAuthenticated(true); // Nếu có token trong localStorage, đánh dấu đã đăng nhập
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login: loginHandler, logout: logoutHandler }}>
+    <AuthContext.Provider value={{ isAuthenticated, role, login: loginHandler, logout: logoutHandler }}>
       {children}
     </AuthContext.Provider>
   );

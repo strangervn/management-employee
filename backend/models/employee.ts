@@ -1,19 +1,21 @@
-import mongoose, { Document, Schema } from 'mongoose';
+// backend/src/models/Employee.ts
 
-interface IEmployee extends Document {
-  name: string;
-  department: string;
-  salary: number;
-  hireDate: Date;
-}
+import { Schema, model, Document } from 'mongoose';
+import { IEmployee } from '../interfaces/employee';
 
-const employeeSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  department: { type: String, required: true },
-  salary: { type: Number, required: true },
-  hireDate: { type: Date, default: Date.now },
-});
+const employeeSchema = new Schema<IEmployee>(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    department: { type: Schema.Types.ObjectId, ref: 'Department' },
+    fullName: { type: String, required: true },
+    position: { type: String, required: true },
+    hireDate: { type: Date, default: Date.now },
+    salary: { type: Number, required: true },
+    status: { type: String, enum: ['active', 'inactive'], default: 'active' }
+   
+  },
+  { timestamps: true }
+);
 
-const Employee = mongoose.model<IEmployee>('Employee', employeeSchema);
-
+const Employee = model<IEmployee>('Employee', employeeSchema);
 export default Employee;

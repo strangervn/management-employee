@@ -1,15 +1,14 @@
 // backend/src/models/Department.ts
 
 import { Schema, model, Document } from 'mongoose';
-import { IDepartment } from '../interfaces/Department';
+import { IDepartment } from '../interfaces/department';
 
 const departmentSchema = new Schema<IDepartment>(
   {
     name: { type: String, required: true, unique: true },
     description: { type: String },
-    employees: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    employees: [{ type: Schema.Types.ObjectId, ref: 'Employee' }]
+   
   },
   { timestamps: true }
 );
