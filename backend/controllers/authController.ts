@@ -2,9 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import User from '../models/user';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { error } from 'console';
 
 // Register user
-export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { username, password } = req.body;
   try {
     // Check if the user already exists
@@ -30,29 +31,36 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 };
 
 // Login user
-export const login = async (req: Request, res: Response): Promise<void> => {
-  const { username, password } = req.body;
+const login = async (req, res) => {
   try {
-    const user = await User.findOne({ username });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
     if (!user) {
-      res.status(401).json({ message: 'Invalid credentials' });
+      res.status(404).json({success:false, error: 'User not found' });
       return 
     }
 
     // Compare the provided password with the stored hash
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      res.status(401).json({ message: 'Invalid credentials' });
+      res.status(404).json({success:false, error: 'User not found' });
       return 
       
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
-    res.json({ token });
+    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
+    res.status(200).json({success:true, token, user: {_id: user._id, role: user.role}})
     return 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({success:false, message: error.message });
     return 
   }
 };
+
+const verify = (req,res) => {
+  res.status(200).json({success:true, user: req.user });
+  return 
+}
+
+export {login, verify}
